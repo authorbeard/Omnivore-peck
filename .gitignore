@@ -1,3 +1,6 @@
+/notes/*.*
+
+#### GITHUB DEFAULTS ####
 *.rbc
 capybara-*.html
 .rspec
@@ -67,3 +70,6 @@ yarn-debug.log*
 /storage/*
 !/storage/.keep
 /public/uploads
+
+# Ignore master key for decrypting credentials and more.
+/config/master.key
