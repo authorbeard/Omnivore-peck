@@ -1,3 +1,6 @@
+/notes/*.*
+
+#### GITHUB DEFAULTS ####
 *.rbc
 capybara-*.html
 .rspec
