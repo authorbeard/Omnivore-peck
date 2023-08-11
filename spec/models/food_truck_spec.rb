@@ -9,6 +9,5 @@ RSpec.describe FoodTruck do
 
       expect(truck2).not_to be_valid
     end
-
   end
 end
