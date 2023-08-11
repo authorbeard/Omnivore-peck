@@ -19,5 +19,11 @@ RSpec.describe 'TruckImporter' do
 
       expect(MockClient).to have_received(:get_all)
     end
+
+    it 'creates new FoodTruck objects and saves them to the database' do
+      expect do
+        TruckImporter.perform
+      end.to change(FoodTruck, :count).by(100)
+    end
   end
 end

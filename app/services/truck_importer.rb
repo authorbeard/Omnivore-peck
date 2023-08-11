@@ -1,33 +1,25 @@
 class TruckImporter
-  attr_accessor :raw_resp
+  TRUCK_ATTRS = FoodTruck.attribute_names.freeze
+  attr_accessor :raw_resp, :trucks
 
   def self.perform
     new.tap(&:import)
   end
 
-  def initialize
-    #really not sure about this.
-    @raw_resp = client.get_all
-  end
-
   def import
-    # raw_resp = client.get_all
-    convert_trucks
-    # persist
+    @raw_resp = client.get_all
+    @trucks = convert_trucks
+    persist
   end
 
   def convert_trucks
     converted = raw_resp.map do |raw_truck|
-      base = truck_attrs.map { |a| raw_truck[a] }.compact
+      truck_attrs = raw_truck.select { |attr| TRUCK_ATTRS.member?(attr) }
+      temp = FoodTruck.new(truck_attrs)
+      temp.x_coord = raw_truck['x']
+      temp.y_coord = raw_truck['y']
+      temp.save!
     end
-  end
-
-  def temp_truck
-    Struct.new(truck_attrs)
-  end
-
-  def truck_attrs
-    @truck_attrs ||= FoodTruck.attribute_names.map(&:to_sym)
   end
 
   def client
