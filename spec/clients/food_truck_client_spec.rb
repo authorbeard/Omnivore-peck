@@ -1,8 +1,9 @@
 require 'rails_helper'
+include WebMock
 
 RSpec.describe FoodTruckClient do
   let(:base_url) { Rails.application.credentials.dig(:truck_api, :url) }
-  let(:all_trucks_response) { JSON.parse(file_fixture('all_trucks.json').read) }
+  let(:all_trucks_response) { file_fixture('all_trucks.json').read }
 
   before do
     stub_request(:get, base_url).
@@ -13,13 +14,13 @@ RSpec.describe FoodTruckClient do
           'Host'=>'www.example.com',
           'User-Agent'=>'Ruby'
         }).
-      to_return(status: 200, body: "", headers: {})
+      to_return(status: 200, body: all_trucks_response, headers: {})
   end
 
-  it 'requests JSON data from the endpoint' do
-binding.break
+  it 'gets all food truck data, in JSON, from the endpoint' do
     resp = FoodTruckClient.get_all
+    truck = resp.first
 
-    expect(JSON.parse(resp)).not_to raise_error
+    expect(truck['objectid']).not_to be_nil
   end
 end
