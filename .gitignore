@@ -73,3 +73,9 @@ yarn-debug.log*
 
 # Ignore master key for decrypting credentials and more.
 /config/master.key
+
+/config/credentials/development.key
+
+/config/credentials/test.key
+
+/config/credentials/production.key
