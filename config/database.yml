@@ -80,6 +80,4 @@ test:
 #
 production:
   <<: *default
-  username: <%= Rails.application.credentials.dig(:db, :username) %>
-  password: <%= Rails.application.credentials.dig(:db, :password) %>
-  database: omnivore_hotwire_rails_production
+  url: <%= Rails.application.credentials.dig(:db, :url) %>
