@@ -45,15 +45,11 @@ CREATE TABLE public.ar_internal_metadata (
 
 CREATE TABLE public.food_trucks (
     id bigint NOT NULL,
-    objectid character varying,
     applicant character varying,
     facilitytype character varying,
     cnn character varying,
     locationdescription character varying,
     address character varying,
-    blocklot character varying,
-    block character varying,
-    lot character varying,
     permit character varying,
     status character varying,
     schedule character varying,
@@ -64,8 +60,6 @@ CREATE TABLE public.food_trucks (
     expirationdate timestamp(6) without time zone,
     longitude double precision,
     latitude double precision,
-    x_coord double precision,
-    y_coord double precision,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );
