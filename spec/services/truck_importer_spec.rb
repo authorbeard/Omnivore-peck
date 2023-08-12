@@ -14,7 +14,7 @@ RSpec.describe 'TruckImporter' do
   describe '.import' do
     it 'queries the endpoint for food truck data' do
       allow(MockClient).to receive(:get_all).and_call_original
-
+debugger
       TruckImporter.perform
 
       expect(MockClient).to have_received(:get_all)

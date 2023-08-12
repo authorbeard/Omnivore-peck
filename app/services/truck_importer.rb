@@ -18,6 +18,9 @@ class TruckImporter
       temp = FoodTruck.new(truck_attrs)
       temp.save!
     end
+
+    rescue => e
+      debugger
   end
 
   def client

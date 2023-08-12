@@ -45,6 +45,7 @@ CREATE TABLE public.ar_internal_metadata (
 
 CREATE TABLE public.food_trucks (
     id bigint NOT NULL,
+    external_location_id character varying,
     applicant character varying,
     facilitytype character varying,
     cnn character varying,
@@ -125,10 +126,10 @@ ALTER TABLE ONLY public.schema_migrations
 
 
 --
--- Name: index_food_trucks_on_permit; Type: INDEX; Schema: public; Owner: -
+-- Name: index_food_trucks_on_permit_and_external_location_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_food_trucks_on_permit ON public.food_trucks USING btree (permit);
+CREATE UNIQUE INDEX index_food_trucks_on_permit_and_external_location_id ON public.food_trucks USING btree (permit, external_location_id);
 
 
 --
@@ -140,6 +141,6 @@ SET search_path TO "$user", public;
 INSERT INTO "schema_migrations" (version) VALUES
 ('20230811175721'),
 ('20230811175920'),
-('20230812170843');
+('20230812185531');
 
 
