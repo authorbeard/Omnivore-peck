@@ -3,10 +3,11 @@ include WebMock
 
 RSpec.describe FoodTruckClient do
   let(:base_url) { Rails.application.credentials.dig(:truck_api, :url) }
+  let(:default_req) { "#{base_url}?$select=objectid AS external_location_id,applicant,facilitytype,cnn,locationdescription,address,permit,status,schedule,priorpermit,fooditems,approved,received,expirationdate,longitude,latitude" }
   let(:all_trucks_response) { file_fixture('all_trucks.json').read }
 
   before do
-    stub_request(:get, base_url).
+    stub_request(:get, default_req).
       with(
         headers: {
           'Accept'=>'*/*',
@@ -22,5 +23,13 @@ RSpec.describe FoodTruckClient do
     truck = resp.first
 
     expect(truck['objectid']).not_to be_nil
+  end
+
+  it 'selects only FoodTruck attrs by default' do
+    allow(Net::HTTP).to receive(:get).and_call_original
+
+    FoodTruckClient.get_all
+
+    expect(Net::HTTP).to have_received(:get).with(URI.parse(default_req))
   end
 end
