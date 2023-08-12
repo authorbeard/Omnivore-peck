@@ -131,10 +131,10 @@ ALTER TABLE ONLY public.schema_migrations
 
 
 --
--- Name: index_food_trucks_on_objectid; Type: INDEX; Schema: public; Owner: -
+-- Name: index_food_trucks_on_permit; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_food_trucks_on_objectid ON public.food_trucks USING btree (objectid);
+CREATE UNIQUE INDEX index_food_trucks_on_permit ON public.food_trucks USING btree (permit);
 
 
 --
@@ -146,6 +146,6 @@ SET search_path TO "$user", public;
 INSERT INTO "schema_migrations" (version) VALUES
 ('20230811175721'),
 ('20230811175920'),
-('20230811183754');
+('20230812170843');
 
 
