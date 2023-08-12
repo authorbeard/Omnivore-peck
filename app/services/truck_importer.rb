@@ -14,13 +14,17 @@ class TruckImporter
 
   def convert_trucks
     converted = raw_resp.map do |raw_truck|
-      truck_attrs = raw_truck.select { |attr| TRUCK_ATTRS.member?(attr) }
-      temp = FoodTruck.new(truck_attrs)
-      temp.save!
+      debugger;
+      truck = FoodTruck.where(
+        external_location_id: raw_truck['external_location_id'],
+        permit: raw_truck['permit']
+      ).first_or_initialize
+       .assign_attributes(raw_truck)
+       .save!
     end
 
-    rescue => e
-      debugger
+  rescue => e
+    logger.error("#{e.message} | #{e.instance_attributes}")
   end
 
   def client
