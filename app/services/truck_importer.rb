@@ -16,8 +16,6 @@ class TruckImporter
     converted = raw_resp.map do |raw_truck|
       truck_attrs = raw_truck.select { |attr| TRUCK_ATTRS.member?(attr) }
       temp = FoodTruck.new(truck_attrs)
-      temp.x_coord = raw_truck['x']
-      temp.y_coord = raw_truck['y']
       temp.save!
     end
   end

@@ -47,7 +47,8 @@ end
 
 group :test do
   gem "rspec-rails"
-gem "webmock"
+  gem "webmock"
+  gem "database_cleaner-active_record"
 end
 
 group :development do
