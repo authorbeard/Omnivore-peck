@@ -8,23 +8,24 @@ class TruckImporter
 
   def import
     @raw_resp = client.get_all
-    @trucks = convert_trucks
-    persist
+    @trucks = convert_and_save
   end
 
-  def convert_trucks
-    converted = raw_resp.map do |raw_truck|
-      debugger;
+  private
+
+  def convert_and_save
+    trucks = raw_resp.map do |raw_truck|
       truck = FoodTruck.where(
         external_location_id: raw_truck['external_location_id'],
         permit: raw_truck['permit']
-      ).first_or_initialize
-       .assign_attributes(raw_truck)
-       .save!
+      ).first_or_initialize.tap do |t|
+        t.assign_attributes(raw_truck)
+        t.save!
+      end
     end
 
   rescue => e
-    logger.error("#{e.message} | #{e.instance_attributes}")
+    Rails.logger.error("#{e.message} | #{e.instance_attributes}")
   end
 
   def client
