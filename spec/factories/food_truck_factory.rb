@@ -1,6 +1,7 @@
 FactoryBot.define do
   factory :food_truck do
-    objectid { Faker::Alphanumeric.alphanumeric(number: 7) }
+    external_location_id { Faker::Alphanumeric.alphanumeric(number: 7) }
+    permit { Faker::Alphanumeric.alphanumeric(number: 7) }
     ## commenting out the other Food Truck attrs to save time; can
     ## uncomment and define as needed.
     # applicant

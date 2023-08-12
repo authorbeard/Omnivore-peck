@@ -1,5 +1,5 @@
 class FoodTruck < ApplicationRecord
-  validates_uniqueness_of :objectid
+  validates :permit, uniqueness: { scope: :external_location_id }
 
   scope :active, -> {
     where(status: 'APPROVED')
