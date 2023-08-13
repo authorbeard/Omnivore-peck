@@ -1,10 +1,12 @@
 # Omnivore
 
-Omnivore is, at present, an api that returns lists of food truck data pulled from San Francisco's public API. It allows you to filter based on permit status, search for specific foods, do both or just ask for a random truck.
+Omnivore allows users to search for food trucks in San Francisco, based on food offered or application status -- or, if you're hungry but indecisive (and/or adventurous), it'll return a random truck. It pulls data from [the city of San Francisco's public api](https://data.sfgov.org/Economy-and-Community/Mobile-Food-Facility-Permit/rqzj-sfat/data).
 
 It's called Omnivore-Peck (well, the repo is, anyway) because I got the idea to work with this API from [this assessment repo](https://github.com/peck/engineering-assessment).
 
-I am going to continue building this out as a way to try out some new technologies and keep myself sharp while I'm looking for work. [The first version will use Hotwire and Rails 7, as you can probably tell from the repo name.](https://github.com/authorbeard/Omnivore-hotwire-rails) As of right now, I plan to get it basically functional, do some refactoring, then do the whole thing again in another stack.
+I am going to continue building this out as a way to try out some new technologies and keep myself sharp while I'm looking for work. [The first full version will use Hotwire and Rails 7, as you can probably tell from the repo name.](https://github.com/authorbeard/Omnivore-hotwire-rails) As of right now, I plan to get it basically functional, do some refactoring, then do the whole thing again in another stack.
+
+This one stops more or less where I would if I'd followed the Peck guidelines, linked to above, a bit more scrupulously (instead I took a bit more time; I explain why down below).
 
 ### Requirements
 
@@ -14,9 +16,9 @@ I am going to continue building this out as a way to try out some new technologi
 
 ### Setup
 
-The easiest way to do this is just to run `bundle exec rake setup:complete`. It wraps up the traditional `bundle install` and `bundle exec rails db:setup` steps with another step, which pulls food truck data from the SF API and seeds the database. 
+The easiest way to set this up, after cloning the repo, is just to run `bundle exec rake setup:complete`. It wraps up the traditional `bundle install` and `bundle exec rails db:setup` steps with another step, which pulls food truck data from the SF API and seeds the database.
 
-The seeding can be done on its own, after everything else has been set up, with `bundle exec rake setup:seed_trucks`. 
+Alternatively, the seeding can be done on its own, after everything else has been set up, with `bundle exec rake setup:seed_trucks`.
 
 It's necessary to seed the trucks, however, since the app does not offer a direct connection to the SF API, so the importer is the only way to get that data. 
 
@@ -28,11 +30,12 @@ You can also import the trucks via a Rails console, instead of using the rake ta
 ### Usage 
 
 **Base URL**: `http://localhost:3000/api/v1/food_trucks`
+
 This iteration of Omnivore simply offers a wrapper around the SF API, allowing users to query the trucks' menus for particular items, filter based on permit status, or see a random truck. 
 
 Eventually, this data will be consumed by a frontend that add a few additional features, like a history of users' visits, a ratings system and some kind of recommendation algorithm based on that stuff. 
 
-**Base url**: `/food_trucks` and users have the options of including, as URL params, either `filters`, `q` (for keyword search) or both. 
+**Endpoint**: `/food_trucks`. Users have the options of including, as URL params, either `filters`, `q` (for keyword search) or both.
 
 When both are present, the filters and keywords are applied using `AND` statements. Support for `OR` is upcoming. Or at least there's a ticket for it. 
 
@@ -85,9 +88,9 @@ curl -X GET "http://localhost:3000/api/v1/food_trucks?q=poke&filters=inactive"
 
 #### API Contract  
 
-This version relies on plain-old JSON representations of `FoodTruck` objects. Serialization will be formalized in later tickets. 
+This version relies on plain-old JSON representations of `FoodTruck` objects. Serialization will be formalized in later tickets.
 
-For this version, `response.body` will contain this, if something is found: 
+For this version, `response.body` will contain this, if something is found:
 
 ```
 {
@@ -114,29 +117,35 @@ For this version, `response.body` will contain this, if something is found:
       "updated_at": "2023-08-13T18:43:01.430Z"
     }
   ]
-}  
-```  
+}
+```
 
-### Notes on this project  
+### Notes on this project
 
-Even though this was based on the Peck assessment linked above, I spent a bit more time with it than that README specifies. There were several reasons:  
+As mentioned, I spent a bit more time with it than the Peck README specifies, though I can't say how much more, because I didn't keep track. I approached this as, in Jira terms, an epic with several tickets, and I worked on those tickets here and there as my schedule permitted.
 
-  - The SF API was totally new to me, so I took some time to familiarize myself with the data and poke around the documentation. That's how I found the JSON endpoint and that's how I found the documentation on things like `$$exclude_system_fields`, and `$where` queries and the `$select` param that `FoodTruckClient` uses to specify columns for return and even alias one. 
-  - I also spent some time test-driving the API via Postman, trying out different params. It helped me make some decisions on how to approach this and gave me a better idea of what kind of data I'd be looking at, and what shape it's in. 
-    - It also helped me figure out why `upsert_all`, which is a great thing to have in Rails now and would really help `TruckImporter` be much more efficient: the SF API doesn't return a key when the value is `nil`, even if it's explicitly requested in params. So some trucks would be missing, for example, `locationdescription`, while others wouldn't. So I kicked the can down the road on that. 
-    - Poking around also helped me figure out how to assemble a reasonable uniqueness index on Food trucks: I originally thought `permit` would be enough, but it looks like these are issued to individuals/companies and can cover multiple trucks/carts. And the only field that seems both unique and is never `nil` (or never was when I was looking at the website) is called `objectid` in the JSON response but `locationid` on [the web GUI](https://data.sfgov.org/Economy-and-Community/Mobile-Food-Facility-Permit/rqzj-sfat/data). So I am aliasing that to `external_location_id` because `objectid` is uselessly vauge and `locationid` might make it seem like it's something generated by this system.  
-  - Like with the aliasing -- and with the matter of selecting *only* the fields that correspond to `FoodTruck` attributes -- I spent some time thinking about this and experimenting with different approaches. Even if I wasn't planning on developing this project a little further for the sake of my own practice/learning, decisions made at the outset of a project can have long-lasting effects, so I approach them with care and thoughtfulness. It's impossible to get everything exactly right in a way that will never cause problems or need refactoring in the future. But it's very possible to avoid painting the entire codebase and all future devs who might work on it into a corner with code that costs so much to fix that it gets put off, generating misshapen code all around it like a big knot of scar tissue.  
-    - Not every decision has huge stakes, naturally. But there were enough of them here that they piled up a bit. Plus it's always good practice to be able to explain your reasoning behind some choices. In real life, maybe you don't need that so much, but in this context, I wanted to be sure I thought a little about tradeoffs. 
-  - The assessment explicitly mentions testing and documentation. Both good things, both things I'm forever trying to be more consistent about (with considerably more success on the testing front, since there are usually automated testing suites and they can catch things that affect users and devs directly; nobody generally reads documentation, so it's a bit hit-or-miss there). But both require some time and thought, especially as I'm taking notes throughout.  
-  - I had to set up everything from scratch. Granted `rails new omnivore-hotwire-rails --api --databse=postgresql` doesn't take that long to run, but there are things that need configuring even then, and there are all sorts of different ways to structure this code.  
-  - I will likely be posting some more notes up to this project's wiki, once I've gone over them and gotten them legible. 
-  - until the above occurs, however, you have recourse to the following: 
+Here's some of what I was up to:
+
+  - The SF API was totally new to me, so I took some time to familiarize myself with the data and poke around the documentation. That's how I found the JSON endpoint and that's how I found the documentation on things like `$$exclude_system_fields`, and `$where` queries and the `$select` param that `FoodTruckClient` uses to specify columns for return.
+  - I also spent some time test-driving the API via Postman, which  helped me make some decisions on how to approach this by giving me a look at the actual data.
+    - It also helped me figure out why `upsert_all` isn't working on this data: the SF API doesn't return a key when the value is `nil`, even if that column is specifically requested in a `$select`. That leaves some truck objects with fewer keys than others, which `upsert_all` rejects. It would really help `TruckImporter` be much more efficient, but I'll address it at some point in the future. That code is only called once at present, during setup, and won't be called very frequently thereafter. There are something around 500 records here at most, and the bulk of imports in the future will be far smaller (just recently updated items), so the performance hit isn't *that* urgent. It's probably also not that tricky to work around, but I wanted to focus on something else.
+    - It took some trial and error to pick a reasonable scope for the uniqueness index on the `food_trucks` table. I originally thought `permit` would be enough, but those are issued to individuals/companies and can cover multiple trucks/carts. And the only field that seems both unique and is never `nil` (or never was when I was looking at the website) is called `objectid` in the JSON response but `locationid` on [the web GUI](https://data.sfgov.org/Economy-and-Community/Mobile-Food-Facility-Permit/rqzj-sfat/data).
+    - So I am aliasing that to `external_location_id` for clarity. `objectid` is uselessly vague and `locationid` makes it sound like it's meaningful within this system, which it isn't, yet. So at least with the alias, we know what that column is and where it came from.
+  - Like with the aliasing -- and with the matter of selecting *only* the fields that correspond to `FoodTruck` attributes -- I spent some time thinking about this and experimenting with different approaches. Even if I wasn't planning on developing this project a little further for the sake of my own practice/learning, decisions made at the outset of a project can have long-lasting effects, so I try to take a bit of extra time to weigh my options. Not every decision has significant stakes, naturally. But there were enough to be made here that they piled up a bit.
+    - I'm still not 100% sure I like my design of the FoodTrucks table, mainly because it's currently so tightly coupled to the API's schema. That seemed like a reasonable enough choice in this context, making it easy and quick to move forward, but kind of bugs me just in general terms. The only alternative that comes to mind right now would involve the Truck Importer knowing a lot about how TruckObjects are structured, and a lot of code mapping api responses to model attrs. But even those aren't really very significant obstacles. Anyway, there are a few different ways I could handle modeling a `FoodTruck` and then instantiating one from the API data, and I smelled a rabbit hole/yak-shave in the offing, so I went with the easy route for now.
+  - The Peck README mentions testing and documentation. Both good and necessary things, and both things I'd include in some form or another anyway, but they do add time to the work.
+  - I had to set up everything from scratch. Granted `rails new omnivore --api --database=postgresql` doesn't take that long to run, but there are things that need configuring even then, and there are all sorts of different ways to structure this code.
+    - For starters, I didn't specify my testing framework, so I had to pull out a bunch of dirs and then set up and configure RSpec, FactoryBot, WebMock, etc.
+    - And even once it's all set up, I regularly consulted other blogs, api docs, StackOverflow, etc. either trying to answer questions, see if someone else has already solved the problem at hand in a way I like, or double-check things that seem self-evident to me now but that I haven't revisited since learning them (sometimes they're just the preferences of the first tech leads I worked under; sometimes they're unique to a certain version of Rails but I didn't realize that; sometimes they're spot on, but it's good to re-examine them anyway).
+  - I will likely be posting some more notes up to this project's wiki, once I've gone over them and gotten them legible.
+  - until the above occurs, however, you have recourse to the following:
 
 ### Other Resources  
 
 I tried to document as much of my decision-making process as possible, in addition to keeping notes on specific decisions. In addition to the documentation here in the README and whatever I add to this repo's wiki, here's what's out there: 
 
   - I'm using GH projects for the first time to organize my tickets: https://github.com/users/authorbeard/projects/1/views/1
+    - The items/tickets there dealing with issues 1 through 18 pertain to this phase of the project.
   - I tend to write decent enough commit messages, which will be more verbose in this case.
   - I will collect those message and flesh them out in PR descriptions, when I do those.
   - Oh, and I'll be blogging about this: https://hamwater.wordpress.com
