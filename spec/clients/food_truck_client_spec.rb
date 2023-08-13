@@ -24,7 +24,7 @@ RSpec.describe FoodTruckClient do
 
   it 'returns an array of truck objects in JSON' do
     truck = FoodTruckClient.get_all.first
-debugger;
+
     expect(truck.class).to be(Hash)
     expect(truck['external_location_id']).to be_present
   end
