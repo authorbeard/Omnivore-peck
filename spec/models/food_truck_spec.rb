@@ -83,7 +83,7 @@ RSpec.describe FoodTruck do
       expect(results).to include(active)
     end
 
-    it 'only returns random if that is included in filters' do
+    it 'only returns a random truck if that is included in filters' do
       allow(FoodTruck).to receive(:chain_filters).and_call_original
       allow(FoodTruck).to receive(:search).and_call_original
       allow(FoodTruck).to receive(:random).and_call_original
@@ -94,6 +94,12 @@ RSpec.describe FoodTruck do
       expect(FoodTruck).to have_received(:random).at_least(:once)
       expect(FoodTruck).not_to have_received(:chain_filters)
       expect(FoodTruck).not_to have_received(:search)
+    end
+
+    it 'returns a single-item array when random is requested' do
+      rando = FoodTruck.random
+
+      expect(rando.class).to eq(Array)
     end
   end
 
