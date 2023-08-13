@@ -22,7 +22,16 @@ RSpec.describe "Food Truck Queries" do
 
   describe 'requests with filters' do
     it 'returns inactive trucks when that filter is requested' do
+      expired = create(:food_truck, :expired)
+      not_yet_active = create(:food_truck, :inactive)
+      expired_marked_active = create(:food_truck, :active, expirationdate: 1.month.ago )
 
+      get api_v1_food_trucks_path, params: { filters: 'active' }
+      data = JSON.parse(response.body)['data']
+      statuses = data.map { |t| t['status'] }.uniq
+
+      expect(data).not_to include(expired_marked_active)
+      expect(data).to match_array([expired, not_yet_active])
     end
 
     it 'returns a random truck when that filte is included' do
