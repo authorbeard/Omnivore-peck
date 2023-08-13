@@ -22,18 +22,18 @@ RSpec.describe FoodTruckClient do
       to_return(status: 200, body: all_trucks_response, headers: {})
   end
 
+  it 'returns an array of truck objects in JSON' do
+    truck = FoodTruckClient.get_all.first
+
+    expect(truck.class).to be(Hash)
+    expect(truck['external_location_id']).to be_present
+  end
+
   it 'selects only FoodTruck attrs by default' do
     allow(Net::HTTP).to receive(:get).and_call_original
 
     FoodTruckClient.get_all
 
     expect(Net::HTTP).to have_received(:get).with(URI.parse(default_req))
-  end
-
-  it 'returns an array of truck objects in JSON' do
-    truck = FoodTruckClient.get_all.first
-
-    expect(truck.class).to be(Hash)
-    expect(truck['external_location_id']).to be_present
   end
 end
