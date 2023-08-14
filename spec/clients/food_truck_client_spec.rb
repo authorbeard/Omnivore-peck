@@ -16,7 +16,7 @@ RSpec.describe FoodTruckClient do
         headers: {
           'Accept'=>'*/*',
           'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-          'Host'=>'www.example.com',
+          'Host'=>'data.sfgov.org',
           'User-Agent'=>'Ruby'
         }).
       to_return(status: 200, body: all_trucks_response, headers: {})

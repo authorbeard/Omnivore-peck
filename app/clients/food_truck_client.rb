@@ -1,7 +1,7 @@
 require 'net/http'
 
 class FoodTruckClient
-  BASE_ENDPOINT_URL = Rails.application.credentials.dig(:truck_api, :url).freeze
+  BASE_ENDPOINT_URL = 'https://data.sfgov.org/resource/rqzj-sfat.json'.freeze
   DEFAULT_SELECTS = "objectid AS external_location_id,applicant,facilitytype,cnn,"\
       "locationdescription,address,permit,status,schedule,priorpermit,fooditems,approved,received,"\
       "expirationdate,longitude,latitude".freeze
