@@ -50,7 +50,7 @@ class FoodTruck < ApplicationRecord
       # never run without data; if it is, that's a much larger problem
       # and this method shouldn't have to account for that possibility
       r = find_by_sql('select * from food_trucks tablesample system(10) limit 1')
-      r.presence ? r.first : random
+      r.presence ? r : random
     end
   end
 
