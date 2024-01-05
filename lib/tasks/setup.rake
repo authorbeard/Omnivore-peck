@@ -1,5 +1,5 @@
 
-namespace :setup do
+namespace :deez do
   desc 'Grab all trucks from SF API for initial load'
   task seed_trucks: :environment do
     TruckImporter.perform

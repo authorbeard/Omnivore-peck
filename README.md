@@ -1,3 +1,9 @@
+***************************************************  
+###### **Disclaimer**: This repo was created as a code challenge for a potential employer. That means it's generally one- or two-pass work, to an MVP level; either it has been timeboxed in the original description or I have set what I regard as reasonable limits. It is uncompensated work, after all, and frequently goes well beyond the scope that would be acceptable for a ticket in any of the places I've worked before. It frequently lacks requirements or acceptance criteria, too, so I try to make reasonable guesses to fill in the gaps. 
+
+###### You can find the original task description at [this assessment repo](https://github.com/peck/engineering-assessment).
+*************************************************** 
+
 # Omnivore
 
 Omnivore allows users to search for food trucks in San Francisco, based on food offered or application status -- or, if you're hungry but indecisive (and/or adventurous), it'll return a random truck. It pulls data from [the city of San Francisco's public api](https://data.sfgov.org/Economy-and-Community/Mobile-Food-Facility-Permit/rqzj-sfat/data).
